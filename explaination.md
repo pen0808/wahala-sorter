@@ -117,7 +117,7 @@ function formatTime(date) {
 }
 ```
 
-**Lines 10–17:** A helper that turns a date into something readable — like "Apr 12, 03:45 PM". It takes the date and formats it nicely so we can show when a task was made.
+ **Lines 10–17:** A helper that turns a date into something readable — like "Apr 12, 03:45 PM". It takes the date and formats it nicely so we can show when a task was made.
 
 ### The App Component (the Boss)
 
@@ -161,11 +161,21 @@ export default function App() {
 
 **Line 26:** `if (!title) return` — If the title is empty (user typed nothing), we stop. No empty tasks allowed!
 
-**Lines 27–30:** `setTasks((prev) => [...prev, { ... }])` — We take the old list of tasks (`prev`) and add a new task to the end. Each task has:
-- `id` — a unique ID made by `crypto.randomUUID()` (like a fingerprint so we can find this task later)
-- `title` — whatever the user typed
-- `column` — starts as `'now'` (new tasks go to the "Now" pile)
-- `timestamp` — the exact time the task was created
+**Lines 27–30:** `setTasks((prev) => [...prev, { id: crypto.randomUUID(), title, column: 'now', timestamp: new Date() }])` — This looks scary but it's really simple! Let's break it down piece by piece:
+
+Think of each task as a **paper card** with 4 things written on it:
+
+1. **`id: crypto.randomUUID()`** — This gives the task a **secret code** that no other task in the whole world has. `crypto.randomUUID()` is like a magic machine that spits out a unique fingerprint every time you ask. Why do we need this? So if you have two tasks both called "Do homework", we can tell them apart by their secret code!
+
+2. **`title`** — This is just the words you typed in the box. In JavaScript, if you write `{ title }` instead of `{ title: title }`, it's a shortcut that means "make a slot called 'title' and put the value of the variable named 'title' inside." It's like saying "put the thing I typed into a box labeled 'title'."
+
+3. **`column: 'now'`** — This says "this task starts in the **Now** pile." `column` is the name of the pile the task belongs to. Every new task begins in "now" because when you just thought of it, you probably need to do it now!
+
+4. **`timestamp: new Date()`** — `new Date()` is like a clock that snaps a picture of the **exact moment** the task was created — right down to the minute! Later, the app shows this so you know when you wrote the task.
+
+**The whole thing:** `[...prev, { ... }]` — The `...prev` (spread operator) is like taking all the old task cards already on your table and spreading them out. Then we add the new card at the end. `setTasks(...)` puts the whole stack back into the magic notebook so the screen updates.
+
+**Real-world example:** Imagine you have a tray of cookies. You bake one more cookie. You don't throw away the old cookies — you just add the new one next to them. That's exactly what `[...prev, newTask]` does!
 
 **Line 31:** `setInput('')` — Clear the text box so the user can type another task.
 
@@ -180,7 +190,7 @@ export default function App() {
 **Line 34–36:** We define `deleteTask`. When you click the ❌ button on a task, we look at all tasks and **keep only the ones whose id doesn't match** — that removes the one we want to delete. Like saying "everyone except you, leave the room!"
 
 ### Moving a Task
-
+0 
 ```jsx
   function moveTask(id, to) {
     setTasks((prev) =>
